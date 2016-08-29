@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+//For _squares, [y][x] is the order.
+
 Maze::Maze(int width, int height) {
 
 	_width = width;
@@ -47,7 +49,13 @@ Maze::Maze(int width, int height) {
 
 //Maze::Maze (int width, int height) : _width(width), _height(height) { }
 
-
+sf::Vector2i getSize(void) {
+	//Returns the width and height of the maze.
+	//Does not do shit.
+	//sf::Vector2i sizeVector(_width, _height);
+	sf::Vector2i sizeVector;
+	return(sizeVector);
+}
 
 void Maze::draw(sf::RenderWindow& window, std::vector<std::vector<class Square>> _squares) {
 	

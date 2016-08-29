@@ -45,7 +45,10 @@ int main()
 	//std::cout << "paskafff " << myMaze._squares.size() << std::endl;
 
 	myMaze = creationalgorithm(myMaze); //TEST
-	Robot robot(0, 0, myMaze);
+	Robot robot(0, 0);
+
+
+
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -55,16 +58,12 @@ int main()
 				window.close();
 		}
 
-
-		//std::cout << "paska" << myMaze._shit << std::endl;
-
-		//std::cout << "paska" << myMaze._squares[1][2].isWall << std::endl;
-
 		window.clear();
 		myMaze.draw(window, myMaze._squares);
 		robot.draw(window);
+		//robot.moveTest(myMaze);
+		robot.rndMovement(myMaze);
 
-		robot.rndMovement();
 		Sleep(30);
 		window.display();
 	}

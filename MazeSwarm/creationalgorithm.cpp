@@ -14,6 +14,8 @@
 
 //Header or not? Class or not?
 
+int height = 32, width = 32;		//Note: after this change, no maze needed at getNeighbors parameters
+
 std::vector<sf::Vector2i> getNeighbors(sf::Vector2i location, Maze maze, std::vector<sf::Vector2i> unvisited) {
 	
 	std::vector<sf::Vector2i> neighbors;
@@ -23,8 +25,8 @@ std::vector<sf::Vector2i> getNeighbors(sf::Vector2i location, Maze maze, std::ve
 
 	if (location.x >= 2) neighbors.push_back(sf::Vector2i{ location.x - 2, location.y });
 	if (location.y >= 2) neighbors.push_back(sf::Vector2i{ location.x, location.y - 2 });
-	if (location.y <= maze._height - 3) neighbors.push_back(sf::Vector2i{ location.x, location.y + 2 });	//Check?
-	if (location.x <= maze._width - 3) neighbors.push_back(sf::Vector2i{ location.x + 2, location.y });		//Check?
+	if (location.y <= height - 3) neighbors.push_back(sf::Vector2i{ location.x, location.y + 2 });	//Check?
+	if (location.x <= width - 3) neighbors.push_back(sf::Vector2i{ location.x + 2, location.y });		//Check?
 
 	for (auto& neighbor : neighbors) {
 		if (std::find(unvisited.begin(), unvisited.end(), neighbor) != unvisited.end()) {					//if neighbor in unvisited
@@ -51,8 +53,8 @@ Maze creationalgorithm(Maze maze) {
 	int mean_x = 0;
 	int mean_y = 0;
 
-	for (int i = 0; i < maze._height/2; i++) {								//x y or y x?
-		for (int j = 0; j < maze._width/2; j++) {
+	for (int i = 0; i < height/2; i++) {								//x y or y x?
+		for (int j = 0; j < width/2; j++) {
 			unvisited.push_back(sf::Vector2i{ 2 * i,2 * j });
 		}
 	}		//Note: unvisited consists of (0,0), (0,2), (0,4), ..., (2,0),..
