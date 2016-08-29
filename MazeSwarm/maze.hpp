@@ -6,12 +6,12 @@
 class Maze {
 
 public:
-	int _shit = 777;					//TEST
 	std::vector<std::vector<class Square>> _squares;
 
 	Maze(int width, int height);
 	void Maze::draw(sf::RenderWindow& window, std::vector<std::vector<class Square>> _squares);
-	sf::Vector2i getSize(void);
+	sf::Vector2i Maze::getSize(void);
+	bool Maze::isWall(int x, int y);
 private:
 	int _width, _height;
 };

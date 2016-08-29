@@ -4,14 +4,3 @@
 Square::Square(void) {
 
 }
-
-
-
-
-
-/*
-void Square::setType(str type) {
-
-
-}
-*/

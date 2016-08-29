@@ -3,22 +3,16 @@
 #include <iostream>
 #include <vector>
 
-//For _squares, [y][x] is the order.
+//For _squares, [y][x] is the order. This might be a bad idea...
 
 Maze::Maze(int width, int height) {
 
 	_width = width;
 	_height = height;
-	_shit = 666;		//TEST
 
 	Square initSquare;
 	initSquare.isWall = true;			//We want to init the maze with walls for the alg that does carving.
-	static std::vector<std::vector<class Square>> _squares (width, std::vector<class Square>(height, initSquare));		//Use typedef?
-
-	_shit++;			//Test
-
-	//std::cout << "paska " << _squares[1][2].isWall << std::endl; //Test, runs OK!
-
+	std::vector<std::vector<class Square>> _squares (width, std::vector<class Square>(height, initSquare));		//Use typedef?
 
 	/*
 	for (int j = 0; j < _height; j++) {
@@ -43,17 +37,17 @@ Maze::Maze(int width, int height) {
 	*/
 }
 
+bool Maze::isWall(int x, int y) {
+	//Includes boundary check.
+	if (x >= 0 && y >= 0 && x < _width && y < _height) {
+		if (_squares[y][x].isWall) return true;		//Note the order?
+	}
+	return false;
+}
 
-
-//Or:
-
-//Maze::Maze (int width, int height) : _width(width), _height(height) { }
-
-sf::Vector2i getSize(void) {
+sf::Vector2i Maze::getSize(void) {
 	//Returns the width and height of the maze.
-	//Does not do shit.
-	//sf::Vector2i sizeVector(_width, _height);
-	sf::Vector2i sizeVector;
+	sf::Vector2i sizeVector(_width, _height);
 	return(sizeVector);
 }
 

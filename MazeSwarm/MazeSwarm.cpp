@@ -8,23 +8,21 @@
 #include <iostream>
 #include "windows.h"
 
+#define WINDOWWIDTH 800
+#define WINDOWHEIGHT 600
+
 //Use local, extern to share _square to every function?
 //Static?
 
+//To do:
+//Replace Maze::isWall to all related places...
+
 int main()
 {
-	
-
 
 	Maze creationalgorithm(Maze maze);		//Forward declaration
-
-	sf::RenderWindow window(sf::VideoMode(400, 400), "Hello mom!");
-
 	Maze myMaze(32, 32);
-
-
-
-
+	sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "Hello mom!");
 
 	// ¤¤¤¤¤¤¤¤¤ Piece of shitty code
 
@@ -41,12 +39,21 @@ int main()
 
 	// ¤¤¤¤¤¤¤¤ End of shitty code
 
-
-	//std::cout << "paskafff " << myMaze._squares.size() << std::endl;
-
-	myMaze = creationalgorithm(myMaze); //TEST
+	myMaze = creationalgorithm(myMaze);
 	Robot robot(0, 0);
 
+
+
+	// ¤¤¤¤¤¤¤¤¤¤¤
+	//Just testing step by step...
+
+	robot.solveMaze(myMaze);
+	robot.solveMaze(myMaze);
+	robot.solveMaze(myMaze);
+	robot.solveMaze(myMaze);
+	robot.solveMaze(myMaze);
+
+	// ¤¤¤¤¤¤¤¤¤¤¤¤¤¤
 
 
 	while (window.isOpen())
@@ -61,8 +68,7 @@ int main()
 		window.clear();
 		myMaze.draw(window, myMaze._squares);
 		robot.draw(window);
-		//robot.moveTest(myMaze);
-		robot.rndMovement(myMaze);
+		//robot.solveMaze(myMaze);
 
 		Sleep(30);
 		window.display();
