@@ -1,20 +1,48 @@
 #ifndef MAZE_HPP
 #define MAZE_HPP
+
+
 #include <SFML/Graphics.hpp>
-#include "square.hpp"
+#include <vector>
+#include <cstdint>
+
+#include "robot.hpp"
+
+
+struct Square {
+	bool isWall		= false;
+	bool isFinish	= false;
+};
+
 
 class Maze {
-
 public:
-	std::vector<std::vector<class Square>> _squares;
+	struct DrawParameters {
+		float		xOrigin					= 10.0f;
+		float		yOrigin					= 10.0f;
+		float		wallThickness			= 5.0f;
+		sf::Color	wallColor				(100, 5, 25);
+		sf::Color	nonWallColor			(200, 100, 250);
+	};
 
-	Maze(int width, int height);
-	void Maze::draw(sf::RenderWindow& window, std::vector<std::vector<class Square>> _squares);
-	sf::Vector2i Maze::getSize(void);
-	bool Maze::isWall(int x, int y);
+	Maze(uint64_t width, uint64_t height);
+
+	const Square& operator()(uint64_t x, uint64_t y) const;	//	const in the end of a member function means that this member cannot modify the state of the object and therefore can be called for const objects
+
+	void addRobot(Robot&& robot);	// && whaa? google "rvalue reference". essentially rips Robot object out of the scope it was created and transfers it into this meber function
+
+	void draw(sf::RenderWindow& window,
+	          const DrawParameters& drawParams = DrawParameters());
+	const sf::Vector2i& getSize(void) const;
+	bool isWall(uint64_t x, uint64_t y) const;
+
 private:
-	int _width, _height;
+	sf::Vector2i						_size;
+	std::vector<std::vector<Square>>	_squares;
+
+	std::vector<Robot>					_robots;
 };
+
 
 #endif
 
