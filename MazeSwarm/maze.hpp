@@ -6,14 +6,15 @@
 class Maze {
 
 public:
-	std::vector<std::vector<class Square>> _squares;
-
 	Maze(int width, int height);
-	void Maze::draw(sf::RenderWindow& window, std::vector<std::vector<class Square>> _squares);
+	void Maze::draw(sf::RenderWindow& window);
 	sf::Vector2i Maze::getSize(void);
 	bool Maze::isWall(int x, int y);
+	void Maze::removeWall(int x, int y);
+	void Maze::fillWithWalls(void);
 private:
 	int _width, _height;
+	std::vector<std::vector<class Square>> _squares;
 };
 
 #endif

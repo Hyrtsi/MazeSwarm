@@ -83,29 +83,32 @@ void Robot::solveMaze(Maze maze) {
 		while (!facingWall(maze)) {
 			moveDirection(_direction, maze);
 		}
-		if (facingWall(maze)) {
-			//Owch!
-			//Get a new direction.
-			//The new direction cannot be the last one since it makes the robot's metal nose hurt.
-
-			//std::vector<sf::Vector2i> newDirections;
-			//newDirections = directions;
-			//newDirections.erase(std::remove(newDirections.begin(), newDirections.end(), _direction), newDirections.end());
-
-			std::vector<sf::Vector2i> newDirections = getNewDirections(maze, _direction);
+		//if (facingWall(maze)) {			//not needed
 
 
-			if (newDirections.size() > 1) {
-				_state = STATE_SPLIT;		//Crossroads
-				std::cout << "Arrived at crossroads..." << std::endl;
-			}
-			else if (newDirections.size() == 1) {
-				std::cout << "Tunnel goes on" << std::endl;
-				_direction = newDirections[0];
-				_state = STATE_MOVING;
-			}
-			else std::cout << "Wtf bug man! @solveMaze moving alg" << std::endl;				//Dirty!
+		//Owch!
+		//Get a new direction.
+		//The new direction cannot be the last one since it makes the robot's metal nose hurt.
+
+		//std::vector<sf::Vector2i> newDirections;
+		//newDirections = directions;
+		//newDirections.erase(std::remove(newDirections.begin(), newDirections.end(), _direction), newDirections.end());
+
+		std::vector<sf::Vector2i> newDirections = getNewDirections(maze, _direction);
+
+
+		if (newDirections.size() > 1) {
+			_state = STATE_SPLIT;		//Crossroads
+			std::cout << "Arrived at crossroads..." << std::endl;
 		}
+		else if (newDirections.size() == 1) {
+			std::cout << "Tunnel goes on" << std::endl;
+			_direction = newDirections[0];
+			_state = STATE_MOVING;
+		}
+		else std::cout << "Wtf bug man! @solveMaze moving alg" << std::endl;				//Dirty!
+
+		//}
 	}
 	else if (_state == STATE_SPLIT) {
 		//Whole bunch of stuff happens
@@ -183,8 +186,8 @@ void Robot::moveTest(Maze maze) {
 
 	float offsetY = 5;
 
-	std::cout << "location " << _x << "," << _y << std::endl;
-	std::cout << "paska" << (_y + offsetY) / 5 << std::endl;
+	//std::cout << "location " << _x << "," << _y << std::endl;
+	//std::cout << "paska" << (_y + offsetY) / 5 << std::endl;
 
 	/*
 	for (int z = 0; z < 31; z++) {
@@ -192,24 +195,17 @@ void Robot::moveTest(Maze maze) {
 	}
 	*/
 
-
+	moveDirection(sf::Vector2i{ 0,1 }, maze);
+	
 	/*
-	if (!maze._squares[(_y + offsetY) / wallThickness][(_x) / wallThickness].isWall)
-	{
-	circle.move(0, offsetY);
-	_y += offsetY;
-	}
-	*/
-
-	if ((_y + offsetY) / 5 < width - 1 && maze._squares[(_y + offsetY) / wallThickness][(_x) / wallThickness].isWall == false) {
+	if ((_y + offsetY) / 5 < width - 1 && maze.isWall((_x) / wallThickness, (_y + offsetY) / wallThickness) == false) {
 		circle.move(0, offsetY);
 		_y += offsetY;
 	}
 	else {
 		//Hit a wall, time to test other side.
 	}
-
-	//std::cout << _y << std::endl;
+	*/
 }
 
 

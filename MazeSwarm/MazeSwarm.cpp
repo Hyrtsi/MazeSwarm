@@ -11,11 +11,14 @@
 #define WINDOWWIDTH 800
 #define WINDOWHEIGHT 600
 
-//Use local, extern to share _square to every function?
-//Static?
-
 //To do:
-//Replace Maze::isWall to all related places...
+//float vs int with robot
+//Advice Lehdari
+//User controls for funs?
+//What the robot sees?
+//Aalto Multi-Robot Learning Experience A* (pun)
+//cre8 to constructor of Maze
+
 
 int main()
 {
@@ -24,21 +27,7 @@ int main()
 	Maze myMaze(32, 32);
 	sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "Hello mom!");
 
-	// ¤¤¤¤¤¤¤¤¤ Piece of shitty code
-
-	Square initSquare;
-	initSquare.isWall = true;			//We want to init the maze with walls for the alg that does carving.
-	
-	std::vector<class Square> v1;
-	for (int i = 0; i < 32; i++) v1.push_back(initSquare);
-
-	std::vector<std::vector<class Square>> v2;
-	for (int i = 0; i < 32; i++) v2.push_back(v1);
-
-	myMaze._squares = v2;
-
-	// ¤¤¤¤¤¤¤¤ End of shitty code
-
+	myMaze.fillWithWalls();
 	myMaze = creationalgorithm(myMaze);
 	Robot robot(0, 0);
 
@@ -50,8 +39,8 @@ int main()
 	robot.solveMaze(myMaze);
 	robot.solveMaze(myMaze);
 	robot.solveMaze(myMaze);
-	robot.solveMaze(myMaze);
-	robot.solveMaze(myMaze);
+	//robot.solveMaze(myMaze);
+	//robot.solveMaze(myMaze);
 
 	// ¤¤¤¤¤¤¤¤¤¤¤¤¤¤
 
@@ -66,11 +55,11 @@ int main()
 		}
 
 		window.clear();
-		myMaze.draw(window, myMaze._squares);
+		myMaze.draw(window);
 		robot.draw(window);
 		//robot.solveMaze(myMaze);
 
-		Sleep(30);
+		Sleep(30);				//Delay (probz ms)
 		window.display();
 	}
 
@@ -81,14 +70,3 @@ int main()
 //Stash for goodies:
 
 //for (auto& juttu : vektori) { juttu.teeJotain(); }
-
-/*
-sf::Vector2i c1{ 0,0 };
-sf::Vector2i c2{ 1, 2 };
-
-std::vector<sf::Vector2i> list;
-
-list.push_back(c1);
-list.push_back(c2);
-
-*/

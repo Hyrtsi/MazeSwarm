@@ -4,19 +4,9 @@
 #include <iostream>
 #include <algorithm>
 
-//#include <vector> //not needed?
+int height = 32, width = 32;		//Future: get these from a maze function...
 
-//Does this file need a header?
-
-//How about sf::Vector2i foo(2,2); ???
-
-//いいいい
-
-//Header or not? Class or not?
-
-int height = 32, width = 32;		//Note: after this change, no maze needed at getNeighbors parameters
-
-std::vector<sf::Vector2i> getNeighbors(sf::Vector2i location, Maze maze, std::vector<sf::Vector2i> unvisited) {
+std::vector<sf::Vector2i> getNeighbors(sf::Vector2i location, std::vector<sf::Vector2i> unvisited) {
 	
 	std::vector<sf::Vector2i> neighbors;
 	std::vector<sf::Vector2i> unvNeighbors;
@@ -42,9 +32,9 @@ Maze creationalgorithm(Maze maze) {
 
 	//Only accepts even x even mazes?
 	//Fix this or not?
+	//This is recursive backtracker algorithm.
 
 	sf::Vector2i rndNeighbor;
-	//std::vector<sf::Vector2i> newNeighbors;		//Delete soon
 	std::vector<sf::Vector2i> unvNeighbors;
 	std::vector<sf::Vector2i> unvisited;
 	std::vector<sf::Vector2i> stack;
@@ -53,31 +43,23 @@ Maze creationalgorithm(Maze maze) {
 	int mean_x = 0;
 	int mean_y = 0;
 
-	for (int i = 0; i < height/2; i++) {								//x y or y x?
+	for (int i = 0; i < height/2; i++) {
 		for (int j = 0; j < width/2; j++) {
 			unvisited.push_back(sf::Vector2i{ 2 * i,2 * j });
 		}
 	}		//Note: unvisited consists of (0,0), (0,2), (0,4), ..., (2,0),..
 
-	//std::cout << "Amount of unvisited cells in the beginning is" << unvisited.size() << std::endl; //OK! == h/2 * w/2
-
 	//Make the initial cell the current cell and mark it as visited
 
 	current = initialCell;
 
-	//Following moved to while-loop to save money:
-	//maze._squares[current.x][current.y].isWall = false;						//x y or y x?
-	//unvisited.erase(std::remove(unvisited.begin(), unvisited.end(), current), unvisited.end());		//erease-remove idiom
-
 	while (unvisited.size() > 0) {
 
-		maze._squares[current.x][current.y].isWall = false;						//x y or y x?
+		maze.removeWall(current.x, current.y);
 		unvisited.erase(std::remove(unvisited.begin(), unvisited.end(), current), unvisited.end());		//erease-remove idiom
 
-		unvNeighbors = getNeighbors(current, maze, unvisited);
+		unvNeighbors = getNeighbors(current, unvisited);
 		
-		//std::cout << "Amount of unv neighbors is" << unvNeighbors.size() << std::endl;
-
 		//Now, unvNeighbors should contain neighbors for "current" that are unvisited
 
 		if (!unvNeighbors.empty()) {						//If the current cell has any neighbours which have not been visited:
@@ -90,25 +72,20 @@ Maze creationalgorithm(Maze maze) {
 
 			mean_x = (current.x + rndNeighbor.x) / 2;
 			mean_y = (current.y + rndNeighbor.y) / 2;
-			maze._squares[mean_x][mean_y].isWall = false;					//x y or y x?
+			//maze._squares[mean_x][mean_y].isWall = false;					//x y or y x?
+			maze.removeWall(mean_x, mean_y);
 
 			//Make the chosen cell the current cell and mark it as visited
 			current = rndNeighbor;
-			//unvisited.erase(std::remove(unvisited.begin(), unvisited.end(), current), unvisited.end());
-			//(Remove wall)
-			//maze._squares[current.x][current.y].isWall = false;				//x y or y x?
+
 		}
-		else if (!stack.empty()) {				//Else if stack is not empty
+		else if (!stack.empty()) {
 			//Pop a cell from the stack
 			//Make it the current cell
 
 			current = stack.back();
 			stack.pop_back();
 		}
-
-			
-
-
 	}
 	return maze;
 }

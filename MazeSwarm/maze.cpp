@@ -37,6 +37,23 @@ Maze::Maze(int width, int height) {
 	*/
 }
 
+void Maze::removeWall(int x, int y) {
+	_squares[y][x].isWall = false;
+}
+
+void Maze::fillWithWalls(void) {
+	Square initSquare;
+	initSquare.isWall = true;			//We want to init the maze with walls for the alg that does carving.
+
+	std::vector<class Square> v1;
+	for (int i = 0; i < _width; i++) v1.push_back(initSquare);
+
+	std::vector<std::vector<class Square>> v2;
+	for (int i = 0; i < _height; i++) v2.push_back(v1);
+
+	_squares = v2;
+}
+
 bool Maze::isWall(int x, int y) {
 	//Includes boundary check.
 	if (x >= 0 && y >= 0 && x < _width && y < _height) {
@@ -51,31 +68,20 @@ sf::Vector2i Maze::getSize(void) {
 	return(sizeVector);
 }
 
-void Maze::draw(sf::RenderWindow& window, std::vector<std::vector<class Square>> _squares) {
-	
+
+void Maze::draw(sf::RenderWindow& window) {
 	float x = 0.0f, y = 0.0f,
 		initVector_x = 10.0f, initVector_y = 10.0f,
 		wallThickness = 5.0f;
 
-	//std::cout << "paska " << _shit << std::endl;		//TEST
-
-	//std::cout << "paska " << _squares[1][2].isFinish << std::endl;		//¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
-
-	//std::cout << "sq " << _squares.size() << std::endl;
-
-
 	for (int j = 0; j < _height; j++) {
 		x = 0.0f;
 		for (int i = 0; i < _width; i++) {
-			Square square = _squares[j][i];		//Fill order?
-			//std::cout << "Current square: " << square.isWall << std::endl;
-
 			sf::RectangleShape tile(sf::Vector2f(wallThickness, wallThickness));
-			if (square.isWall) {
+			if (isWall(i,j)) {
 				tile.setFillColor(sf::Color(100, 5, 25));
-
 			}
-			else if (!square.isWall) {
+			else {
 				tile.setFillColor(sf::Color(200, 100, 250));
 			}
 			tile.setPosition(initVector_x + x, initVector_y + y);
@@ -83,18 +89,7 @@ void Maze::draw(sf::RenderWindow& window, std::vector<std::vector<class Square>>
 			x += wallThickness;
 		}
 		y += wallThickness;
-	}			//This seems OK, passed one test
-
-
-
-	/*
-	if (_squares[0][0].isWall) {
-	sf::RectangleShape tile(sf::Vector2f(wallThickness, wallThickness));
-	tile.setFillColor(sf::Color(50, 50, 250));
-	tile.setPosition(initVector_x + x, initVector_y + y);
-	window.draw(tile);
 	}
-	*/
 }
 
 
@@ -121,5 +116,15 @@ std::vector<std::vector<std::vector<class Square>>> maze;
 std::vector<int>(3, 6);		//=={6,6,6}
 std::vector<std::vector<int>>(100, std::vector<int>(100, 60));
 std::vector<class Square>(100, Square());	//square has no constructor arguments
+
+
+if (_squares[0][0].isWall) {
+sf::RectangleShape tile(sf::Vector2f(wallThickness, wallThickness));
+tile.setFillColor(sf::Color(50, 50, 250));
+tile.setPosition(initVector_x + x, initVector_y + y);
+window.draw(tile);
+}
+
+
 
 */
