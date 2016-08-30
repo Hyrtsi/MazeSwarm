@@ -1,20 +1,52 @@
 #ifndef MAZE_HPP
 #define MAZE_HPP
+
+
 #include <SFML/Graphics.hpp>
-#include "square.hpp"
+#include <vector>
+#include <cstdint>
+
+#include "robot.hpp"
+
+
+struct Square {
+	bool isWall = true;
+	bool isFinish = false;
+};
+
 
 class Maze {
-
 public:
-	Maze(int width, int height);
-	void Maze::draw(sf::RenderWindow& window);
-	sf::Vector2i Maze::getSize(void);
-	bool Maze::isWall(int x, int y);
-	void Maze::removeWall(int x, int y);
-	void Maze::fillWithWalls(void);
+	struct DrawParameters {
+		float		xOrigin = 10.0f;
+		float		yOrigin = 10.0f;
+		float		wallThickness = 5.0f;
+		sf::Color	wallColor = sf::Color(255, 5, 100);
+		sf::Color	nonWallColor = sf::Color(100, 50, 50);
+	};
+
+
+	Maze(uint64_t width, uint64_t height);
+
+	const Square& operator()(uint64_t x, uint64_t y) const;
+
+	uint64_t addRobot(Robot&& robot);
+	Robot& getRobot(uint64_t robotId);
+	const Robot& getRobot(uint64_t robotId) const;
+
+	void draw(sf::RenderWindow& window,
+		const DrawParameters& drawParams = DrawParameters());
+	const sf::Vector2i& getSize(void) const;
+	bool isWall(uint64_t x, uint64_t y) const;
+
+	void removeWall(int x, int y);		// am I useful?	Change to uint64_t ???
+	//void fillWithWalls(void);			// am I useful?
+
 private:
-	int _width, _height;
-	std::vector<std::vector<class Square>> _squares;
+	sf::Vector2i						_size;
+	std::vector<std::vector<Square>>	_squares;
+	std::vector<Robot>					_robots;
+
 };
 
 #endif

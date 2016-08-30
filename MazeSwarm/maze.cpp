@@ -4,42 +4,71 @@
 #include <vector>
 
 //For _squares, [y][x] is the order. This might be a bad idea...
+//Called outside maze, (x, y) is the order. The fuzz is only under the hood.
 
-Maze::Maze(int width, int height) {
+Maze::Maze(uint64_t width, uint64_t height) :
+		_size	(width, height),
+		_squares(_size.x, std::vector<Square>(_size.y))
+{}
 
-	_width = width;
-	_height = height;
+const Square& Maze::operator()(uint64_t x, uint64_t y) const {
+	return _squares[x][y];
+}
 
-	Square initSquare;
-	initSquare.isWall = true;			//We want to init the maze with walls for the alg that does carving.
-	std::vector<std::vector<class Square>> _squares (width, std::vector<class Square>(height, initSquare));		//Use typedef?
+uint64_t Maze::addRobot(Robot && robot) {
+	_robots.push_back(robot);
+	_robots.back()._maze = this;
+	return _robots.size() - 1;
+}
 
-	/*
-	for (int j = 0; j < _height; j++) {
-		for (int i = 0; i < _width; i++) {
-			_squares[i][j] = initSquare;
+Robot& Maze::getRobot(uint64_t robotId) {
+	return _robots[robotId];
+}
+
+const Robot& Maze::getRobot(uint64_t robotId) const {
+	return _robots[robotId];
+}
+
+bool Maze::isWall(uint64_t x, uint64_t y) const {
+	//Includes boundary check.
+	if (x >= 0 && y >= 0 && x < _size.x && y < _size.y)
+		return _squares[y][x].isWall;								// Double check order
+
+	return false;
+}
+
+const sf::Vector2i& Maze::getSize(void) const {
+	//Returns the width and height of the maze.
+	return _size;
+}
+
+
+void Maze::draw(sf::RenderWindow& window, const DrawParameters& drawParams) {
+
+	for (int i = 0; i < _size.x; i++) {
+		float x = drawParams.xOrigin + i*drawParams.wallThickness;
+		for (int j = 0; j < _size.y; j++) {
+			float y = drawParams.yOrigin + j*drawParams.wallThickness;
+			const Square& square = _squares[i][j];
+
+			sf::RectangleShape tile(sf::Vector2f(drawParams.wallThickness, drawParams.wallThickness));
+			tile.setFillColor(square.isWall ? drawParams.wallColor : drawParams.nonWallColor);
+			tile.setPosition(x, y);
+
+			window.draw(tile);
 		}
-	}		//Loop OK!
-
-	//##############################
-	// OR:
-
-	Square mysquare;
-	mysquare.isWall = true;
-
-	std::vector<class Square> v1;
-	for (int i = 0; i < _width; i++) v1.push_back(mysquare);			//size = 6 itc OK
-
-	std::vector<std::vector<class Square>> v2;
-	for (int i = 0; i < _height; i++) v2.push_back(v1);					//OK
-
-	_squares = v2;
-	*/
+	}
 }
 
 void Maze::removeWall(int x, int y) {
 	_squares[y][x].isWall = false;
 }
+
+
+
+
+/*
+//We can probably hold a funeral for this guy.
 
 void Maze::fillWithWalls(void) {
 	Square initSquare;
@@ -53,46 +82,7 @@ void Maze::fillWithWalls(void) {
 
 	_squares = v2;
 }
-
-bool Maze::isWall(int x, int y) {
-	//Includes boundary check.
-	if (x >= 0 && y >= 0 && x < _width && y < _height) {
-		if (_squares[y][x].isWall) return true;		//Note the order?
-	}
-	return false;
-}
-
-sf::Vector2i Maze::getSize(void) {
-	//Returns the width and height of the maze.
-	sf::Vector2i sizeVector(_width, _height);
-	return(sizeVector);
-}
-
-
-void Maze::draw(sf::RenderWindow& window) {
-	float x = 0.0f, y = 0.0f,
-		initVector_x = 10.0f, initVector_y = 10.0f,
-		wallThickness = 5.0f;
-
-	for (int j = 0; j < _height; j++) {
-		x = 0.0f;
-		for (int i = 0; i < _width; i++) {
-			sf::RectangleShape tile(sf::Vector2f(wallThickness, wallThickness));
-			if (isWall(i,j)) {
-				tile.setFillColor(sf::Color(100, 5, 25));
-			}
-			else {
-				tile.setFillColor(sf::Color(200, 100, 250));
-			}
-			tile.setPosition(initVector_x + x, initVector_y + y);
-			window.draw(tile);
-			x += wallThickness;
-		}
-		y += wallThickness;
-	}
-}
-
-
+*/
 
 
 /*

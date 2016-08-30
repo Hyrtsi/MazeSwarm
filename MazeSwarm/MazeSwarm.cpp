@@ -23,22 +23,34 @@
 int main()
 {
 
-	Maze creationalgorithm(Maze maze);		//Forward declaration
+	Robot robot(0,0);
+
 	Maze myMaze(32, 32);
-	sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "Hello mom!");
 
-	myMaze.fillWithWalls();
-	myMaze = creationalgorithm(myMaze);
-	Robot robot(0, 0);
+	//Create the maze next...
+	//myMaze.create();				<<	Which is better?
 
+	// ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
+
+	// Robotics:
+
+	auto robotId1 = myMaze.addRobot(std::move(robot));
+
+	//std::move is used to indicate that an object t may be "moved from", i.e. allowing the efficient transfer of resources from t to another object.
+	//In C++11, in addition to copy constructors, objects can have move constructors.
+	
+	//Gogol: move semantics, rvalue, perfect forwarding.
+
+	//Reference back to robot:
+	auto& robotRef1 = myMaze.getRobot(robotId1);
+
+
+	sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "Help! I'm trapped in a maze factory!");
 
 
 	// ¤¤¤¤¤¤¤¤¤¤¤
 	//Just testing step by step...
 
-	robot.solveMaze(myMaze);
-	robot.solveMaze(myMaze);
-	robot.solveMaze(myMaze);
 	//robot.solveMaze(myMaze);
 	//robot.solveMaze(myMaze);
 
@@ -57,7 +69,6 @@ int main()
 		window.clear();
 		myMaze.draw(window);
 		robot.draw(window);
-		//robot.solveMaze(myMaze);
 
 		Sleep(30);				//Delay (probz ms)
 		window.display();
