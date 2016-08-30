@@ -14,7 +14,7 @@ public:
 	Robot(float x, float y, float xOrigin = 10.0f, float yOrigin = 10.0f,
 	      float radius = 2.5f, const sf::Vector2i& direction = sf::Vector2i(0, 0));
 	
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderWindow& window) const;
 	void rndMovement(void);									//Mostly useless (For testing drunkard behavior)
 	void moveTest(void);
 	void solveMaze(void);

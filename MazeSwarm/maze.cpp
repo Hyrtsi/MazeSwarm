@@ -14,9 +14,18 @@ const Square& Maze::operator()(uint64_t x, uint64_t y) const {
 	return _squares[x][y];
 }
 
-void Maze::addRobot(Robot && robot) {
+uint64_t Maze::addRobot(Robot && robot) {
 	_robots.push_back(robot);
 	_robots.back()._maze = this;
+	return _robots.size() - 1;
+}
+
+Robot& Maze::getRobot(uint64_t robotId) {
+	return _robots[robotId];
+}
+
+const Robot& Maze::getRobot(uint64_t robotId) const {
+	return _robots[robotId];
 }
 
 bool Maze::isWall(uint64_t x, uint64_t y) const {

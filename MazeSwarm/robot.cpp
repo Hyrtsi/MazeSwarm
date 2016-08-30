@@ -23,6 +23,8 @@ Robot::Robot(float x, float y, float xOrigin, float yOrigin,
 	_state		(STATE_INIT)
 {
 	circle.setPosition(xOrigin + _x, yOrigin + _y);
+	circle.setRadius(_radius);
+	circle.setFillColor(sf::Color(100, 250, 50));
 }
 
 //	no. no. noooooo~
@@ -33,9 +35,7 @@ Robot::Robot(float x, float y, float xOrigin, float yOrigin,
 //Grid coordinates <-> draw coordinates (*wallThickness -fold ratio)
 //_x, _y are draw coordinates so everything inside [][] should be transformed with Hyyrynen transformation H(e) = e/wallThickness
 
-void Robot::draw(sf::RenderWindow& window) {
-	circle.setRadius(_radius);
-	circle.setFillColor(sf::Color(100, 250, 50));
+void Robot::draw(sf::RenderWindow& window) const {
 	//circle.setPosition(initVector_x +_x, initVector_y+_y);		//Absolute vodka
 	window.draw(circle);
 }
