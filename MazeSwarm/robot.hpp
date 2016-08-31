@@ -2,6 +2,7 @@
 #define ROBOT_HPP
 
 #include <SFML/Graphics.hpp>
+#include <cstdint>
 
 class Maze;
 
@@ -29,22 +30,23 @@ private:
 		STATE_WAIT
 	};
 
-	const Maze*			_maze;
-	float				_x;
-	float				_y;
+	const Maze*								_maze;
+	float									_x;
+	float									_y;
 
-	float				_xOrigin;
-	float				_yOrigin;
-	float				_radius;
+	float									_xOrigin;
+	float									_yOrigin;
+	float									_radius;
 
-	sf::Vector2i		_direction{ 0, 0 };						//Direction is {x,y}
-	State				_state;
-
+	sf::Vector2i							_direction{ 0, 0 };				//Direction is {x,y}
+	State									_state;
+	std::vector<sf::Vector2i>				_branchDirections;
 	sf::CircleShape circle;
 
 	static const std::vector<sf::Vector2i>	__directions;
 
 	bool facingWall(void);
+
 	void moveDirection(const sf::Vector2i& direction);
 	void moveOffset(float offsetX, float offsetY);
 

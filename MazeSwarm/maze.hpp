@@ -12,6 +12,7 @@
 struct Square {
 	bool isWall = true;
 	bool isFinish = false;
+	Square(bool isWall = true, bool isFinish = false) : isWall(isWall), isFinish(isFinish) {}
 };
 
 
@@ -21,8 +22,8 @@ public:
 		float		xOrigin = 10.0f;
 		float		yOrigin = 10.0f;
 		float		wallThickness = 5.0f;
-		sf::Color	wallColor = sf::Color(255, 5, 100);
-		sf::Color	nonWallColor = sf::Color(100, 50, 50);
+		sf::Color	wallColor = sf::Color(25, 15, 25);
+		sf::Color	nonWallColor = sf::Color(125, 25, 125);
 	};
 
 
@@ -34,13 +35,16 @@ public:
 	Robot& getRobot(uint64_t robotId);
 	const Robot& getRobot(uint64_t robotId) const;
 
+	std::vector<sf::Vector2i> getNeighbors(sf::Vector2i location,
+		std::vector<sf::Vector2i> unvisited);
+	void creationalgorithm(void);
+
 	void draw(sf::RenderWindow& window,
 		const DrawParameters& drawParams = DrawParameters());
 	const sf::Vector2i& getSize(void) const;
 	bool isWall(uint64_t x, uint64_t y) const;
 
-	void removeWall(int x, int y);		// am I useful?	Change to uint64_t ???
-	//void fillWithWalls(void);			// am I useful?
+	void removeWall(uint64_t x, uint64_t y);		// am I useful?	Changed to uint64_t
 
 private:
 	sf::Vector2i						_size;

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "maze.hpp"
-//#include <stdio.h>
 #include <iostream>
 #include <algorithm>
 

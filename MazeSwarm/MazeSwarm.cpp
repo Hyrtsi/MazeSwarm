@@ -19,6 +19,8 @@
 //Aalto Multi-Robot Learning Experience A* (pun)
 //cre8 to constructor of Maze
 
+//Discriminating out-of-bounds squares from regular: maze -> operator; robot -> getNewDirections
+//If it works, document it.
 
 int main()
 {
@@ -27,10 +29,7 @@ int main()
 
 	Maze myMaze(32, 32);
 
-	//Create the maze next...
-	//myMaze.create();				<<	Which is better?
-
-	// ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
+	//¤¤¤¤¤¤¤¤¤¤¤¤¤¤
 
 	// Robotics:
 
@@ -44,17 +43,24 @@ int main()
 	//Reference back to robot:
 	auto& robotRef1 = myMaze.getRobot(robotId1);
 
-
 	sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "Help! I'm trapped in a maze factory!");
 
 
-	// ¤¤¤¤¤¤¤¤¤¤¤
-	//Just testing step by step...
+	//Test test
 
-	//robot.solveMaze(myMaze);
-	//robot.solveMaze(myMaze);
+	//Removewall and draw OK!
+	//Again, check coordinate order for comfort reasons
+	//>> robot directions are OK
+	//>> robot moveDirection and robot moveOffset are OK
 
-	// ¤¤¤¤¤¤¤¤¤¤¤¤¤¤
+	robotRef1.solveMaze();
+	robotRef1.solveMaze();
+	robotRef1.solveMaze();
+	robotRef1.solveMaze();
+	robotRef1.solveMaze();
+	robotRef1.solveMaze();
+
+
 
 
 	while (window.isOpen())
@@ -66,11 +72,16 @@ int main()
 				window.close();
 		}
 
+
+		//robotRef1.rndMovement();
+
+
 		window.clear();
 		myMaze.draw(window);
-		robot.draw(window);
+		//robotRef1.solveMaze();
+		robotRef1.draw(window);
 
-		Sleep(30);				//Delay (probz ms)
+		Sleep(300);				//Delay (probz ms)
 		window.display();
 	}
 

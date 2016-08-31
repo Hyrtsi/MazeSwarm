@@ -58,16 +58,19 @@ void Robot::moveTest(void) {
 	float offsetY = 5;
 
 	const float wallThickness = 5.0f;
+
+
 	auto& mazeSize = _maze->getSize();
 	auto& square = (*_maze)((_x) / wallThickness, (_y + offsetY) / wallThickness);
 
-	if ((_y + offsetY) / 5 < mazeSize.x - 1 && !square.isWall) {
+	if ((_y + offsetY) / wallThickness < mazeSize.x - 1 && !square.isWall) {
 		circle.move(0, offsetY);
 		_y += offsetY;
 	}
 	else {
 		//Hit a wall, time to test other side.
 	}
+
 }
 
 
@@ -78,6 +81,7 @@ void Robot::solveMaze(void) {
 
 	if (_state == STATE_INIT) {
 		//Find a direction
+
 		uint64_t index = 0;
 		_direction = __directions[index];
 
@@ -86,6 +90,7 @@ void Robot::solveMaze(void) {
 			index++;
 		}
 		_state = STATE_MOVING;
+		
 	}
 	else if (_state == STATE_MOVING) {
 		while (!facingWall()) {
@@ -96,6 +101,7 @@ void Robot::solveMaze(void) {
 
 		if (newDirections.size() > 1) {
 			_state = STATE_SPLIT;		//Crossroads
+			_branchDirections = newDirections;
 			std::cout << "Arrived at crossroads..." << std::endl;
 		}
 		else if (newDirections.size() == 1) {
@@ -108,18 +114,28 @@ void Robot::solveMaze(void) {
 	}
 	else if (_state == STATE_SPLIT) {
 		//Whole bunch of stuff happens
+
+		//Robot(s) need memory here (or recursion)
+		//Since no point going to same dead branch twice.
+		
+		//The following implementation has no memory...
+
+		_direction = _branchDirections.back();
+		_branchDirections.pop_back();
+		_state = STATE_MOVING;
 	}
 
 
 }
 
 bool Robot::facingWall(void) {
-	if (!_maze) return false;								// Understand me later?
+	if (!_maze) return false;
 	const float wallThickness = 5.0f;
 
 	//Not to be called when _state == STATE_INIT
 	return (*_maze)(_x / wallThickness + _direction.x, _y / wallThickness + _direction.y).isWall;
 }
+
 
 
 void Robot::moveDirection(const sf::Vector2i& direction) {
@@ -132,6 +148,7 @@ void Robot::moveDirection(const sf::Vector2i& direction) {
 void Robot::moveOffset(float offsetX, float offsetY) {
 
 	if (!_maze) return;
+	
 	const float wallThickness = 5.0f;
 
 	auto& mazeSize = _maze->getSize();
@@ -154,20 +171,25 @@ void Robot::moveOffset(float offsetX, float offsetY) {
 
 std::vector<sf::Vector2i> Robot::getNewDirections(const sf::Vector2i& lastDirection) {
 	//Returns a list of available directions excluding the last direction!
-	if (!_maze) return std::vector<sf::Vector2i>();						// Understand me later?
+	if (!_maze) return std::vector<sf::Vector2i>();
+	
 	const float wallThickness = 5.0f;
 
 	std::vector<sf::Vector2i> tempDirections = __directions;
 	tempDirections.erase(std::remove(tempDirections.begin(), tempDirections.end(), lastDirection), tempDirections.end());
-
+	
 	//Yet to find the possible ones from this bunch...
 
 	std::vector<sf::Vector2i> newDirections;
 
+	//auto& square = (*_maze)(_x-100, _y);
 
 
 	for (auto& direction : tempDirections) {
+
 		auto& square = (*_maze)((_x / wallThickness) + direction.x, (_y / wallThickness) + direction.y);
+
+		//We have to discriminate out of bounds squares and regular somehow...
 
 		if (!square.isWall) {
 			newDirections.push_back(direction);
@@ -176,6 +198,7 @@ std::vector<sf::Vector2i> Robot::getNewDirections(const sf::Vector2i& lastDirect
 
 	return newDirections;
 }
+
 
 
 /*
