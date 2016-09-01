@@ -79,6 +79,15 @@ void Robot::solveMaze(void) {
 	//First try on _single_ robot maze solving algorithm.
 	//Using Hyyrynen Left Hand with a Lemon Twist Algorithm -kind of approach
 
+	//This function changes the direction and state
+	//Sometimes it makes the robot move
+	//
+
+	//Ok problem:
+	//> the alg thinks that turn is a crossroads
+	//>>> getNewDirections is the evil villain
+
+
 	if (_state == STATE_INIT) {
 		//Find a direction
 
@@ -95,6 +104,7 @@ void Robot::solveMaze(void) {
 	else if (_state == STATE_MOVING) {
 		while (!facingWall()) {
 			moveDirection(_direction);
+			//If we want "smooth" movement, draw here. Otherwise drawing happens only at "interesting" points.
 		}
 
 		auto newDirections = getNewDirections(_direction);
@@ -102,7 +112,7 @@ void Robot::solveMaze(void) {
 		if (newDirections.size() > 1) {
 			_state = STATE_SPLIT;		//Crossroads
 			_branchDirections = newDirections;
-			std::cout << "Arrived at crossroads..." << std::endl;
+			std::cout << "Arrived at crossroads, coordinates: " << _x << " " << _y << std::endl;
 		}
 		else if (newDirections.size() == 1) {
 			std::cout << "Tunnel goes on" << std::endl;
@@ -120,8 +130,10 @@ void Robot::solveMaze(void) {
 		
 		//The following implementation has no memory...
 
-		_direction = _branchDirections.back();
-		_branchDirections.pop_back();
+		int randIndex = rand() % _branchDirections.size();
+		_direction = _branchDirections[randIndex];
+		_branchDirections.erase(std::remove(_branchDirections.begin(), _branchDirections.end(), _direction), _branchDirections.end());	//erase-remove idiom
+
 		_state = STATE_MOVING;
 	}
 
@@ -158,7 +170,7 @@ void Robot::moveOffset(float offsetX, float offsetY) {
 	if ((_x + offsetX) / 5 > mazeSize.x - 1) offsetX = mazeSize.x - 1;
 	if ((_y + offsetY)  /5 > mazeSize.y - 1) offsetY = mazeSize.y - 1;
 
-	if (!(*_maze)((_x + offsetX) / 5.0f, (_y + offsetY) / 5.0f).isWall)	//	consider similar kind of DrawParameters than in maze? or maybe make the struct global and reuse it?
+	if (!(*_maze)((_x + offsetX) / wallThickness, (_y + offsetY) / wallThickness).isWall)	//	consider similar kind of DrawParameters than in maze? or maybe make the struct global and reuse it?
 	{
 		circle.move(offsetX, offsetY);
 		_x += offsetX;
@@ -170,26 +182,32 @@ void Robot::moveOffset(float offsetX, float offsetY) {
 
 
 std::vector<sf::Vector2i> Robot::getNewDirections(const sf::Vector2i& lastDirection) {
-	//Returns a list of available directions excluding the last direction!
+	//Returns a list of available directions excluding the inverse of last direction!
+	//Does the argument really have to be const?
 	if (!_maze) return std::vector<sf::Vector2i>();
 	
 	const float wallThickness = 5.0f;
 
+	//Inverse the last direction:
+
+	sf::Vector2i removeDirection = lastDirection;
+	removeDirection.x *= -1;
+	removeDirection.y *= -1;
+
+
 	std::vector<sf::Vector2i> tempDirections = __directions;
-	tempDirections.erase(std::remove(tempDirections.begin(), tempDirections.end(), lastDirection), tempDirections.end());
+	tempDirections.erase(std::remove(tempDirections.begin(), tempDirections.end(), removeDirection), tempDirections.end());
 	
 	//Yet to find the possible ones from this bunch...
 
 	std::vector<sf::Vector2i> newDirections;
-
-	//auto& square = (*_maze)(_x-100, _y);
-
 
 	for (auto& direction : tempDirections) {
 
 		auto& square = (*_maze)((_x / wallThickness) + direction.x, (_y / wallThickness) + direction.y);
 
 		//We have to discriminate out of bounds squares and regular somehow...
+		//And the way is: for ob square,	isWall = true, isFinish = true
 
 		if (!square.isWall) {
 			newDirections.push_back(direction);

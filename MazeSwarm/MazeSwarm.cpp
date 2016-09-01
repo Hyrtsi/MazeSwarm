@@ -53,12 +53,8 @@ int main()
 	//>> robot directions are OK
 	//>> robot moveDirection and robot moveOffset are OK
 
-	robotRef1.solveMaze();
-	robotRef1.solveMaze();
-	robotRef1.solveMaze();
-	robotRef1.solveMaze();
-	robotRef1.solveMaze();
-	robotRef1.solveMaze();
+	//robotRef1.solveMaze();
+
 
 
 
@@ -78,7 +74,7 @@ int main()
 
 		window.clear();
 		myMaze.draw(window);
-		//robotRef1.solveMaze();
+		robotRef1.solveMaze();
 		robotRef1.draw(window);
 
 		Sleep(300);				//Delay (probz ms)
