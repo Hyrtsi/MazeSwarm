@@ -12,12 +12,24 @@
 #define WINDOWHEIGHT 600
 
 //To do:
+// Multirobot, robot-to-robot data sharing
 //float vs int with robot
-//Advice Lehdari
 //User controls for funs?
 //What the robot sees?
-//Aalto Multi-Robot Learning Experience A* (pun)
-//cre8 to constructor of Maze
+
+//Possible uses for a robot swarm:
+// > making a map of the terrain
+// > finding a target located at a specific place (such as finish flag)
+// > finding a moving target
+// > estimating the width and height or other properties of the map
+
+//Current restrictions and assumptions:
+// > That the maze branches are not connected (fancy graph theory term here)
+// > That there are no isolated branches
+// > That there is one and only one route from point a to point b
+
+//Note that the algorithm can be modified to pass these boundaries
+
 
 //Discriminating out-of-bounds squares from regular: maze -> operator; robot -> getNewDirections
 //If it works, document it.
@@ -77,7 +89,8 @@ int main()
 		robotRef1.solveMaze();
 		robotRef1.draw(window);
 
-		Sleep(300);				//Delay (probz ms)
+
+		Sleep(60);				//Delay (probz ms)
 		window.display();
 	}
 

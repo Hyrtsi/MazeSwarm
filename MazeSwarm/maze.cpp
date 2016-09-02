@@ -68,13 +68,16 @@ void Maze::creationalgorithm(void) {
 	int mean_x = 0;
 	int mean_y = 0;
 
+	srand(time(NULL));											//Comment for always the same maze.
+
+
 	for (int i = 0; i < _size.y / 2; i++) {
 		for (int j = 0; j < _size.x / 2; j++) {
 			unvisited.push_back(sf::Vector2i{ 2 * i,2 * j });
 		}
-	}										//Note: unvisited consists of (0,0), (0,2), (0,4), ..., (2,0),..
+	}															//Note: unvisited consists of (0,0), (0,2), (0,4), ..., (2,0),..
 
-	current = initialCell;					//Make the initial cell the current cell and mark it as visited
+	current = initialCell;										//Make the initial cell the current cell and mark it as visited
 
 	while (unvisited.size() > 0) {
 
@@ -84,8 +87,8 @@ void Maze::creationalgorithm(void) {
 		unvNeighbors = getNeighbors(current, unvisited);		//Now, unvNeighbors should contain neighbors for "current" that are unvisited
 
 		if (!unvNeighbors.empty()) {							//If the current cell has any neighbours which have not been visited:
-																//Choose randomly one of the unvisited neighbours
-			int RandIndex = rand() % unvNeighbors.size();		//Number between 0 and nNeighbors-1 (?)
+																
+			int RandIndex = rand() % unvNeighbors.size();		//Choose randomly one of the unvisited neighbours
 			rndNeighbor = unvNeighbors[RandIndex];
 			stack.push_back(current);							//Push the current cell to the stack
 																//Remove the wall between the current cell and the chosen cell

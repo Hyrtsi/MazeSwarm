@@ -27,7 +27,6 @@ Robot::Robot(float x, float y, float xOrigin, float yOrigin,
 	circle.setFillColor(sf::Color(100, 250, 50));
 }
 
-//Le Problematique:
 //Grid coordinates <-> draw coordinates (*wallThickness -fold ratio)
 //_x, _y are draw coordinates so everything inside [][] should be transformed with Hyyrynen transformation H(e) = e/wallThickness
 
@@ -35,58 +34,19 @@ void Robot::draw(sf::RenderWindow& window) const {
 	window.draw(circle);
 }
 
-void Robot::rndMovement(void) {
-
-	int randNum = rand() % 3;
-	randNum--;
-	int rnd_x, rnd_y;
-
-	if (rand() % 1000 > 500) {
-		rnd_x = randNum * 5;
-		rnd_y = 0;
-	}
-	else {
-		rnd_y = randNum * 5;
-		rnd_x = 0;
-	}
-	moveOffset((float)rnd_x, (float)rnd_y);
-}
-
 void Robot::moveTest(void) {
+	//Mostly useless.
 	if (!_maze) return;
-
 	float offsetY = 5;
-
 	const float wallThickness = 5.0f;
-
-
-	auto& mazeSize = _maze->getSize();
 	auto& square = (*_maze)((_x) / wallThickness, (_y + offsetY) / wallThickness);
-
-	if ((_y + offsetY) / wallThickness < mazeSize.x - 1 && !square.isWall) {
-		circle.move(0, offsetY);
-		_y += offsetY;
-	}
-	else {
-		//Hit a wall, time to test other side.
-	}
-
+	circle.move(0, offsetY);
 }
-
 
 void Robot::solveMaze(void) {
 
 	//First try on _single_ robot maze solving algorithm.
 	//Using Hyyrynen Left Hand with a Lemon Twist Algorithm -kind of approach
-
-	//This function changes the direction and state
-	//Sometimes it makes the robot move
-	//
-
-	//Ok problem:
-	//> the alg thinks that turn is a crossroads
-	//>>> getNewDirections is the evil villain
-
 
 	if (_state == STATE_INIT) {
 		//Find a direction
@@ -102,41 +62,119 @@ void Robot::solveMaze(void) {
 		
 	}
 	else if (_state == STATE_MOVING) {
+		moveDirection(_direction);
+
+		/*
+		//This exact mechanism probably makes the robot miss some turns and go straight as much as possible
+
 		while (!facingWall()) {
 			moveDirection(_direction);
-			//If we want "smooth" movement, draw here. Otherwise drawing happens only at "interesting" points.
 		}
+		*/
+
+		//Somehow design a system that knows whether a tunnel has been visited or not.
+		//Hopefully, it isn't exactly a list of visited squares
+		//A list of directions from the beginning is semi-ok (visited: (0,1)+(0,1)+(-1,0) etc)
+		//Another way: a strong enough protocol to prevent anyone going back to visited area to do nothing but to visit an earlier unvisited branch
+
+
 
 		auto newDirections = getNewDirections(_direction);
 
 		if (newDirections.size() > 1) {
+			//std::cout << "Arrived at crossroads, coordinates: " << _x << " " << _y << std::endl;
 			_state = STATE_SPLIT;		//Crossroads
-			_branchDirections = newDirections;
-			std::cout << "Arrived at crossroads, coordinates: " << _x << " " << _y << std::endl;
+
+
+
+			//Calling .back() to empty container causes weird behavior...? Does this actually call it since the size == 0 is first?
+			if (_branches.size() == 0 || _branches.back().terminate == false) {			//Does this cause error? Logic: coming to cr without terminate == it's new
+				//Never been here before
+				std::cout << "New branch, amount of branches: " << _branches.size() << std::endl;
+				
+				Branch branch;
+				branch.arriveDirection = _direction;
+				branch.directions = newDirections;
+				_branches.push_back(branch);
+			}
+
+
 		}
 		else if (newDirections.size() == 1) {
-			std::cout << "Tunnel goes on" << std::endl;
+			//std::cout << "Tunnel goes on" << std::endl;
 			_direction = newDirections[0];
 			_state = STATE_MOVING;
 		}
-		else std::cout << "Wtf bug man! @solveMaze moving alg" << std::endl;				//Dirty!
+		else {
+			std::cout << "At the end of the branch" << std::endl;
+			//Reached a dead end, returning back to crossroads
 
+			//Tasks:
+			//1) find way back to last crossroads
+			//2) carry information that this speficic choice of direction was bad
+			//3) remember where you came from to the crossroads before seeing the dead end
+			//3.1) >> remember earlier crossroads, too
+			//4) somehow find a new direction, minimize visiting same places many times
+
+			//From the branches, remove the current dir from the latest branch
+
+			//If the whole crossroads point out to be no use, we have to get a way back to earlier places
+
+			_direction.x *= -1;
+			_direction.y *= -1;
+			_branches.back().terminate = true;												//TEST
+
+		}
+
+		//moveDirection(_direction);
 	}
 	else if (_state == STATE_SPLIT) {
-		//Whole bunch of stuff happens
 
-		//Robot(s) need memory here (or recursion)
-		//Since no point going to same dead branch twice.
+		//Upon arriving to crossroads, we have to find out whether the robot has already been here or not.
+		//If this is the first visit, we will create a new branch
+		//If this is coming back after already being here, we will not create a new branch of the same location but rather update the information.
+
+
+		//Current logic for cr:
+		//Make a new branch or not (must be done at move)
+		//Select random direction from branches.back().directions
+		//Remove that specific dir
+		//set terminate to false (as we're moving to another branch in the current cw)
+		//goto move
+
+
+		//At this point, the robot is at cr, looking for the next place to go which is
+		// 1) next branch 
+		// 2) away from current crossroads back to earlier crossroads		srand(time(NULL));
+
+
+
+		std::vector<sf::Vector2i> branchDirections = _branches.back().directions;
+
+		if (branchDirections.size() > 0) {									//Or 1?
+
+			// Select a random direction from the possible branch directions - {2,3} possibles
+			// Remove the direction so that we don't use the same twice
+			// After that, go and adventure at the selected branch
+
+			int randIndex = rand() % branchDirections.size();
+			_direction = branchDirections[randIndex];
+			branchDirections.erase(std::remove(branchDirections.begin(), branchDirections.end(), _direction), branchDirections.end());	//erase-remove idiom
+
+			_branches.back().directions = branchDirections;				//This is not smooth...?
+		}
+		else {
+			// Visited every branch, time to terminate the branch and go back
+			_direction.x = -1 * _branches.back().arriveDirection.x;
+			_direction.y = -1 * _branches.back().arriveDirection.y;
+			_branches.pop_back();
+			//How does this affect setting [-1].terminate = false???
+			//I think no bad..?
+		}
 		
-		//The following implementation has no memory...
-
-		int randIndex = rand() % _branchDirections.size();
-		_direction = _branchDirections[randIndex];
-		_branchDirections.erase(std::remove(_branchDirections.begin(), _branchDirections.end(), _direction), _branchDirections.end());	//erase-remove idiom
-
+		_branches.back().terminate = false;								//TEST TEST
 		_state = STATE_MOVING;
 	}
-
 
 }
 
@@ -145,6 +183,7 @@ bool Robot::facingWall(void) {
 	const float wallThickness = 5.0f;
 
 	//Not to be called when _state == STATE_INIT
+	//Actually, there is no OB problem. With direction, maybe since dir = {0,0}
 	return (*_maze)(_x / wallThickness + _direction.x, _y / wallThickness + _direction.y).isWall;
 }
 
@@ -181,16 +220,18 @@ void Robot::moveOffset(float offsetX, float offsetY) {
 }
 
 
-std::vector<sf::Vector2i> Robot::getNewDirections(const sf::Vector2i& lastDirection) {
+std::vector<sf::Vector2i> Robot::getNewDirections(sf::Vector2i lastDirection) {
 	//Returns a list of available directions excluding the inverse of last direction!
 	//Does the argument really have to be const?
 	if (!_maze) return std::vector<sf::Vector2i>();
 	
 	const float wallThickness = 5.0f;
 
+	//Idea: only remove the inv of last dir if _state != STATE_RETURN ?
+	
 	//Inverse the last direction:
 
-	sf::Vector2i removeDirection = lastDirection;
+	sf::Vector2i removeDirection = lastDirection;		//Somehow I feel that it wouldn't be safe to edit lastDirection but rather create this new guy.
 	removeDirection.x *= -1;
 	removeDirection.y *= -1;
 
@@ -219,9 +260,4 @@ std::vector<sf::Vector2i> Robot::getNewDirections(const sf::Vector2i& lastDirect
 
 
 
-/*
-void Robot::setPosition(int x, int y) {
-	_x = x;
-	_y = y;
-}
-*/
+//auto& mazeSize = _maze->getSize();

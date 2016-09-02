@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cstdint>
+#include <time.h>
 
 #include "robot.hpp"
 

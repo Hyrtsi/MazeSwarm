@@ -3,6 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <cstdint>
+#include <time.h>
+
+struct Branch {
+	sf::Vector2i				arriveDirection;
+	std::vector<sf::Vector2i>	directions;
+	bool						terminate = false;
+};
 
 class Maze;
 
@@ -16,8 +23,7 @@ public:
 
 
 	void draw(sf::RenderWindow& window) const;
-	void rndMovement(void);									//Mostly useless (For testing drunkard behavior)
-	void moveTest(void);
+	void moveTest(void);							//Mostly useless.
 	void solveMaze(void);
 
 
@@ -40,17 +46,19 @@ private:
 
 	sf::Vector2i							_direction{ 0, 0 };				//Direction is {x,y}
 	State									_state;
-	std::vector<sf::Vector2i>				_branchDirections;
+	//std::vector<sf::Vector2i>				_branchDirections;				//Can be forgotten since struct Branches
+	//Branch									_branchDirections;			//OK replacer?
+	std::vector<Branch>	_branches;						//Collection of _branchDirections
 	sf::CircleShape circle;
 
 	static const std::vector<sf::Vector2i>	__directions;
 
-	bool facingWall(void);
+	bool facingWall(void);								//Turns out this function is almost useless. solveMaze -> init is OK use
 
 	void moveDirection(const sf::Vector2i& direction);
 	void moveOffset(float offsetX, float offsetY);
 
-	std::vector<sf::Vector2i> getNewDirections(const sf::Vector2i& lastDirection);
+	std::vector<sf::Vector2i> getNewDirections(sf::Vector2i lastDirection);
 };
 
 #endif
