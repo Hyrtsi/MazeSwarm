@@ -43,10 +43,9 @@ void Robot::moveTest(void) {
 	circle.move(0, offsetY);
 }
 
-void Robot::solveMaze(void) {
 
-	//First try on _single_ robot maze solving algorithm.
-	//Using Hyyrynen Left Hand with a Lemon Twist Algorithm -kind of approach
+
+void Robot::solveMaze(void) {
 
 	if (_state == STATE_INIT) {
 		//Find a direction
@@ -63,41 +62,24 @@ void Robot::solveMaze(void) {
 	}
 	else if (_state == STATE_MOVING) {
 		moveDirection(_direction);
-
-		/*
-		//This exact mechanism probably makes the robot miss some turns and go straight as much as possible
-
-		while (!facingWall()) {
-			moveDirection(_direction);
-		}
-		*/
-
-		//Somehow design a system that knows whether a tunnel has been visited or not.
-		//Hopefully, it isn't exactly a list of visited squares
-		//A list of directions from the beginning is semi-ok (visited: (0,1)+(0,1)+(-1,0) etc)
-		//Another way: a strong enough protocol to prevent anyone going back to visited area to do nothing but to visit an earlier unvisited branch
-
-
-
+		
 		auto newDirections = getNewDirections(_direction);
 
 		if (newDirections.size() > 1) {
 			//std::cout << "Arrived at crossroads, coordinates: " << _x << " " << _y << std::endl;
-			_state = STATE_SPLIT;		//Crossroads
-
-
-
+			
 			//Calling .back() to empty container causes weird behavior...? Does this actually call it since the size == 0 is first?
-			if (_branches.size() == 0 || _branches.back().terminate == false) {			//Does this cause error? Logic: coming to cr without terminate == it's new
+
+			if (_branches.size() == 0 || _branches.back().terminate == false) {					//Does this cause error? Logic: coming to cr without terminate == it's new
 				//Never been here before
-				std::cout << "New branch, amount of branches: " << _branches.size() << std::endl;
-				
+
 				Branch branch;
 				branch.arriveDirection = _direction;
 				branch.directions = newDirections;
 				_branches.push_back(branch);
+				std::cout << "New branch, amount of branches: " << _branches.size() << std::endl;
 			}
-
+			_state = STATE_SPLIT;
 
 		}
 		else if (newDirections.size() == 1) {
@@ -106,19 +88,8 @@ void Robot::solveMaze(void) {
 			_state = STATE_MOVING;
 		}
 		else {
-			std::cout << "At the end of the branch" << std::endl;
+			//std::cout << "At the end of the branch" << std::endl;
 			//Reached a dead end, returning back to crossroads
-
-			//Tasks:
-			//1) find way back to last crossroads
-			//2) carry information that this speficic choice of direction was bad
-			//3) remember where you came from to the crossroads before seeing the dead end
-			//3.1) >> remember earlier crossroads, too
-			//4) somehow find a new direction, minimize visiting same places many times
-
-			//From the branches, remove the current dir from the latest branch
-
-			//If the whole crossroads point out to be no use, we have to get a way back to earlier places
 
 			_direction.x *= -1;
 			_direction.y *= -1;
@@ -131,27 +102,21 @@ void Robot::solveMaze(void) {
 	else if (_state == STATE_SPLIT) {
 
 		//Upon arriving to crossroads, we have to find out whether the robot has already been here or not.
-		//If this is the first visit, we will create a new branch
-		//If this is coming back after already being here, we will not create a new branch of the same location but rather update the information.
-
+		//If it was needed (first visit), new branch has already been made at STATE_MOVE
 
 		//Current logic for cr:
 		//Make a new branch or not (must be done at move)
 		//Select random direction from branches.back().directions
 		//Remove that specific dir
-		//set terminate to false (as we're moving to another branch in the current cw)
-		//goto move
-
-
-		//At this point, the robot is at cr, looking for the next place to go which is
-		// 1) next branch 
-		// 2) away from current crossroads back to earlier crossroads		srand(time(NULL));
-
+		//set terminate to false (as we're moving to another branch in the current cr)
+		//goto move		
+		
+		srand(time(NULL));						//This must be here?
 
 
 		std::vector<sf::Vector2i> branchDirections = _branches.back().directions;
 
-		if (branchDirections.size() > 0) {									//Or 1?
+		if (branchDirections.size() > 0) {
 
 			// Select a random direction from the possible branch directions - {2,3} possibles
 			// Remove the direction so that we don't use the same twice
@@ -162,21 +127,28 @@ void Robot::solveMaze(void) {
 			branchDirections.erase(std::remove(branchDirections.begin(), branchDirections.end(), _direction), branchDirections.end());	//erase-remove idiom
 
 			_branches.back().directions = branchDirections;				//This is not smooth...?
+			_branches.back().terminate = false;								//TEST TEST
 		}
 		else {
 			// Visited every branch, time to terminate the branch and go back
 			_direction.x = -1 * _branches.back().arriveDirection.x;
 			_direction.y = -1 * _branches.back().arriveDirection.y;
 			_branches.pop_back();
+			std::cout << "Removed branch, amount of branches: " << _branches.size() << std::endl;
 			//How does this affect setting [-1].terminate = false???
 			//I think no bad..?
+			//The removal could also happen at arrival but this might be OK.
+
+
+			_branches.back().terminate = true;								//Transfers the message: this subbranch was no-go
 		}
-		
-		_branches.back().terminate = false;								//TEST TEST
 		_state = STATE_MOVING;
 	}
-
 }
+
+
+
+
 
 bool Robot::facingWall(void) {
 	if (!_maze) return false;

@@ -11,7 +11,20 @@
 #define WINDOWWIDTH 800
 #define WINDOWHEIGHT 600
 
-//To do:
+// *** To do: ***
+//Color visited tiles
+//Map-maker
+//File type for mazes
+//Test with some dummy mazes
+//Output information about branches
+//Place a finish finally
+//Implement finish dynamics
+//Create one or many set of rules (return to beginning after finding finish etc)
+
+
+
+
+
 // Multirobot, robot-to-robot data sharing
 //float vs int with robot
 //User controls for funs?
@@ -90,7 +103,7 @@ int main()
 		robotRef1.draw(window);
 
 
-		Sleep(60);				//Delay (probz ms)
+		Sleep(40);				//Delay (probz ms)
 		window.display();
 	}
 
