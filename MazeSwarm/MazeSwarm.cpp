@@ -12,21 +12,22 @@
 #define WINDOWHEIGHT 600
 
 // *** To do: ***
-//Color visited tiles
+
+
 //Map-maker
 //File type for mazes
 //Test with some dummy mazes
-//Output information about branches
-//Place a finish finally
-//Implement finish dynamics
+
+//Output information about branches?
+
+//Place a finish to a difficult location? Is the diagonal corner often difficult?
+//Implement finish dynamics to solveMaze or similar
+
 //Create one or many set of rules (return to beginning after finding finish etc)
 
+// Multirobot, robot-to-robot data sharing = new solver approach (or upd8 existing)
 
-
-
-
-// Multirobot, robot-to-robot data sharing
-//float vs int with robot
+//float vs int with robot (warnings)
 //User controls for funs?
 //What the robot sees?
 
@@ -44,8 +45,11 @@
 //Note that the algorithm can be modified to pass these boundaries
 
 
+
 //Discriminating out-of-bounds squares from regular: maze -> operator; robot -> getNewDirections
 //If it works, document it.
+
+
 
 int main()
 {
@@ -101,6 +105,7 @@ int main()
 		myMaze.draw(window);
 		robotRef1.solveMaze();
 		robotRef1.draw(window);
+		
 
 
 		Sleep(40);				//Delay (probz ms)

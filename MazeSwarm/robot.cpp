@@ -43,9 +43,19 @@ void Robot::moveTest(void) {
 	circle.move(0, offsetY);
 }
 
-
-
 void Robot::solveMaze(void) {
+
+
+	if (atFinish() && _state != STATE_FINISH) {			//Second option is so that robot can walk past the finish normally
+		_state = STATE_FINISH;
+		std::cout << "Found It!";
+		//Save coordinates?
+		//What else?
+		//If we want to use STATE_FINISH to indicate this happy event,
+		//1) after finding finish something should be changed and then goto STATE_MOVING etc
+		//2) the state is of no use, why not just have a bool foundFinish or sf::Vector2i {x,y} (which is initially something weird)
+		//3) decide after multirobot dynamics are OK
+	}
 
 	if (_state == STATE_INIT) {
 		//Find a direction
@@ -97,7 +107,6 @@ void Robot::solveMaze(void) {
 
 		}
 
-		//moveDirection(_direction);
 	}
 	else if (_state == STATE_SPLIT) {
 
@@ -147,18 +156,20 @@ void Robot::solveMaze(void) {
 }
 
 
-
-
-
 bool Robot::facingWall(void) {
 	if (!_maze) return false;
 	const float wallThickness = 5.0f;
-
 	//Not to be called when _state == STATE_INIT
 	//Actually, there is no OB problem. With direction, maybe since dir = {0,0}
 	return (*_maze)(_x / wallThickness + _direction.x, _y / wallThickness + _direction.y).isWall;
 }
 
+
+bool Robot::atFinish(void) {
+	if (!_maze) return false;
+	const float wallThickness = 5.0f;
+	return (*_maze)(_x / wallThickness, _y / wallThickness).isFinish;
+}
 
 
 void Robot::moveDirection(const sf::Vector2i& direction) {
@@ -183,6 +194,7 @@ void Robot::moveOffset(float offsetX, float offsetY) {
 
 	if (!(*_maze)((_x + offsetX) / wallThickness, (_y + offsetY) / wallThickness).isWall)	//	consider similar kind of DrawParameters than in maze? or maybe make the struct global and reuse it?
 	{
+		(*_maze)((_x + offsetX) / wallThickness, (_y + offsetY) / wallThickness).isVisited = true;
 		circle.move(offsetX, offsetY);
 		_x += offsetX;
 		_y += offsetY;

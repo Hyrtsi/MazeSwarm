@@ -13,25 +13,34 @@
 struct Square {
 	bool isWall = true;
 	bool isFinish = false;
-	Square(bool isWall = true, bool isFinish = false) : isWall(isWall), isFinish(isFinish) {}
+	bool isVisited = false;
+	Square(bool isWall = true, bool isFinish = false, bool isVisited = false) :
+		isWall(isWall), isFinish(isFinish), isVisited(isVisited) {}
 };
 
 
 class Maze {
 public:
 	struct DrawParameters {
-		float		xOrigin = 10.0f;
-		float		yOrigin = 10.0f;
-		float		wallThickness = 5.0f;
-		sf::Color	wallColor = sf::Color(25, 15, 25);
-		sf::Color	nonWallColor = sf::Color(125, 25, 125);
+		float		xOrigin						= 10.0f;
+		float		yOrigin						= 10.0f;
+		float		wallThickness				= 5.0f;
+		sf::Color	wallColor					= sf::Color(25, 15, 25);
+		sf::Color	nonWallColor				= sf::Color(125, 25, 125);
+		sf::Color	visitedColor				= sf::Color(15, 15, 180);
+		sf::Color	finishColor					= sf::Color::Yellow;
 	};
 
 
 	Maze(uint64_t width, uint64_t height);
 
-	const Square& operator()(uint64_t x, uint64_t y) const;
+	//const Square& operator()(uint64_t x, uint64_t y) const;					//#############
+	
 
+	Square& operator()(uint64_t x, uint64_t y);						///////////////////////////////
+	
+	
+	
 	uint64_t addRobot(Robot&& robot);
 	Robot& getRobot(uint64_t robotId);
 	const Robot& getRobot(uint64_t robotId) const;

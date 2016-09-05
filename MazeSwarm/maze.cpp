@@ -3,8 +3,9 @@
 #include <iostream>
 #include <vector>
 
-//For _squares, [y][x] is the order. This might be a bad idea...
-//Called outside maze, (x, y) is the order. The fuzz is only under the hood.
+//EDITED:
+//Square has now a third property, isVisited. Hope it didn't break anything...
+//To draw the trajectory for each robot, square can not be const? Testing...
 
 Maze::Maze(uint64_t width, uint64_t height) :
 		_size	(width, height),
@@ -13,7 +14,15 @@ Maze::Maze(uint64_t width, uint64_t height) :
 	creationalgorithm();
 }
 
+/*
 const Square& Maze::operator()(uint64_t x, uint64_t y) const {
+	if (x >= 0 && y >= 0 && x < _size.x && y < _size.y) return _squares[x][y];
+	return Square(true, true);									//Try #1: discriminate OB-case with a paradox.
+}
+*/
+
+
+Square& Maze::operator()(uint64_t x, uint64_t y) {
 	if (x >= 0 && y >= 0 && x < _size.x && y < _size.y) return _squares[x][y];
 	return Square(true, true);									//Try #1: discriminate OB-case with a paradox.
 }
@@ -41,11 +50,11 @@ std::vector<sf::Vector2i> Maze::getNeighbors(sf::Vector2i location, std::vector<
 
 	if (location.x >= 2) neighbors.push_back(sf::Vector2i{ location.x - 2, location.y });
 	if (location.y >= 2) neighbors.push_back(sf::Vector2i{ location.x, location.y - 2 });
-	if (location.y <= _size.x - 3) neighbors.push_back(sf::Vector2i{ location.x, location.y + 2 });	//Check?
-	if (location.x <= _size.y - 3) neighbors.push_back(sf::Vector2i{ location.x + 2, location.y });		//Check?
+	if (location.y <= _size.x - 3) neighbors.push_back(sf::Vector2i{ location.x, location.y + 2 });
+	if (location.x <= _size.y - 3) neighbors.push_back(sf::Vector2i{ location.x + 2, location.y });
 
 	for (auto& neighbor : neighbors) {
-		if (std::find(unvisited.begin(), unvisited.end(), neighbor) != unvisited.end()) {					//if neighbor in unvisited
+		if (std::find(unvisited.begin(), unvisited.end(), neighbor) != unvisited.end()) {
 			unvNeighbors.push_back(neighbor);
 		}
 	}
@@ -67,6 +76,9 @@ void Maze::creationalgorithm(void) {
 	sf::Vector2i initialCell = { 0,0 };
 	int mean_x = 0;
 	int mean_y = 0;
+
+	_squares[0][0].isVisited = true;		//Not very elegant
+
 
 	srand(time(NULL));											//Comment for always the same maze.
 
@@ -107,6 +119,12 @@ void Maze::creationalgorithm(void) {
 			stack.pop_back();
 		}
 	}
+
+	//Add finish:
+
+	//First try: manual
+
+	_squares[_size.x - 2][_size.y - 2].isFinish = true;
 }
 
 
@@ -119,7 +137,17 @@ void Maze::draw(sf::RenderWindow& window, const DrawParameters& drawParams) {
 			const Square& square = _squares[i][j];
 
 			sf::RectangleShape tile(sf::Vector2f(drawParams.wallThickness, drawParams.wallThickness));
-			tile.setFillColor(square.isWall ? drawParams.wallColor : drawParams.nonWallColor);
+			//tile.setFillColor(square.isWall ? drawParams.wallColor : drawParams.nonWallColor);
+
+
+			if (square.isVisited) {
+				tile.setFillColor(drawParams.visitedColor);
+			}
+			else {
+				if (square.isWall) tile.setFillColor(drawParams.wallColor);
+				else if (!square.isWall) tile.setFillColor(drawParams.nonWallColor);
+			}
+			if (square.isFinish) tile.setFillColor(drawParams.finishColor);
 			tile.setPosition(x, y);
 
 			window.draw(tile);
@@ -145,38 +173,3 @@ bool Maze::isWall(uint64_t x, uint64_t y) const {
 void Maze::removeWall(uint64_t x, uint64_t y) {
 	_squares[y][x].isWall = false;
 }
-
-
-/*
-
-
-sf::Vector2i data{ 20, 20 };
-sf::Vector3i foo{ 1,1,1 };
-
-std::vector<std::vector<int>> vectorception;
-std::vector<std::vector<std::vector<int>>> vector3;
-
-//std::cout << mysquare.isWall;
-//mysquare.isWall = true;
-//std::cout << mysquare.isWall;
-
-
-
-
-std::vector<class Square> vtest;
-std::vector<std::vector<std::vector<class Square>>> maze;
-std::vector<int>(3, 6);		//=={6,6,6}
-std::vector<std::vector<int>>(100, std::vector<int>(100, 60));
-std::vector<class Square>(100, Square());	//square has no constructor arguments
-
-
-if (_squares[0][0].isWall) {
-sf::RectangleShape tile(sf::Vector2f(wallThickness, wallThickness));
-tile.setFillColor(sf::Color(50, 50, 250));
-tile.setPosition(initVector_x + x, initVector_y + y);
-window.draw(tile);
-}
-
-
-
-*/
