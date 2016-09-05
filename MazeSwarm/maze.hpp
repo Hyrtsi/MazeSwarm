@@ -47,8 +47,9 @@ public:
 
 	std::vector<sf::Vector2i> getNeighbors(sf::Vector2i location,
 		std::vector<sf::Vector2i> unvisited);
-	void creationalgorithm(void);
 
+	void creationalgorithm(void);
+	void Maze::editor(sf::Event& event, sf::RenderWindow& window, const DrawParameters& drawParams = DrawParameters());
 	void draw(sf::RenderWindow& window,
 		const DrawParameters& drawParams = DrawParameters());
 	const sf::Vector2i& getSize(void) const;

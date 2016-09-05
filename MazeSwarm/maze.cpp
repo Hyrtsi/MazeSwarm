@@ -127,6 +127,41 @@ void Maze::creationalgorithm(void) {
 	_squares[_size.x - 2][_size.y - 2].isFinish = true;
 }
 
+void Maze::editor(sf::Event& event, sf::RenderWindow& window, const DrawParameters& drawParams) {
+
+	if (event.type == sf::Event::MouseButtonPressed)
+	{
+		int x = (event.mouseButton.x - drawParams.xOrigin) / drawParams.wallThickness;
+		int y = (event.mouseButton.y - drawParams.yOrigin) / drawParams.wallThickness;
+		
+		if (event.mouseButton.button == sf::Mouse::Right)
+		{
+			_squares[x][y].isWall = false;
+			_squares[x][y].isFinish = false;
+			//std::cout << "the right button was pressed" << std::endl;
+			//std::cout << "mouse x: " << event.mouseButton.x << std::endl;
+			//std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+		}
+		if (event.mouseButton.button == sf::Mouse::Left)
+		{
+			_squares[x][y].isWall = true;
+			_squares[x][y].isFinish = false;
+			//std::cout << "the left button was pressed" << std::endl;
+			//std::cout << "mouse x: " << event.mouseButton.x << std::endl;
+			//std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+		}
+		if (event.mouseButton.button == sf::Mouse::Middle) {
+			_squares[x][y].isFinish = true;
+			_squares[x][y].isWall = false;
+		}
+	}
+
+
+
+
+}
+
+
 
 void Maze::draw(sf::RenderWindow& window, const DrawParameters& drawParams) {
 
@@ -138,7 +173,6 @@ void Maze::draw(sf::RenderWindow& window, const DrawParameters& drawParams) {
 
 			sf::RectangleShape tile(sf::Vector2f(drawParams.wallThickness, drawParams.wallThickness));
 			//tile.setFillColor(square.isWall ? drawParams.wallColor : drawParams.nonWallColor);
-
 
 			if (square.isVisited) {
 				tile.setFillColor(drawParams.visitedColor);

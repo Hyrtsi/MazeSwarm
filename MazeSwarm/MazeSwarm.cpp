@@ -15,10 +15,17 @@
 
 
 //Map-maker
+// > make a choice: editor or auto-cre8
 //File type for mazes
 //Test with some dummy mazes
 
 //Output information about branches?
+
+
+//VARIABLE AVAILABILITY
+//>> wallThickness! pls
+
+
 
 //Place a finish to a difficult location? Is the diagonal corner often difficult?
 //Implement finish dynamics to solveMaze or similar
@@ -51,8 +58,22 @@
 
 
 
+
+
+
 int main()
 {
+
+	/*
+	std::cout << "Enter true/false (1/0): ";
+	bool userInput;
+	std::cin >> userInput;
+
+	if (userInput) {
+		Maze shitMaze(64, 64);
+		shitMaze.editor();
+	}
+	*/
 
 	Robot robot(0,0);
 
@@ -69,47 +90,44 @@ int main()
 	
 	//Gogol: move semantics, rvalue, perfect forwarding.
 
-	//Reference back to robot:
-	auto& robotRef1 = myMaze.getRobot(robotId1);
+	auto& robotRef1 = myMaze.getRobot(robotId1);				//Reference back to robot
 
 	sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "Help! I'm trapped in a maze factory!");
 
 
-	//Test test
-
-	//Removewall and draw OK!
-	//Again, check coordinate order for comfort reasons
-	//>> robot directions are OK
-	//>> robot moveDirection and robot moveOffset are OK
-
-	//robotRef1.solveMaze();
 
 
-
-
+	bool escapeEditor = false;				//To turn maze editing on/off. Assign to key?
 
 	while (window.isOpen())
 	{
+
+
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) escapeEditor = true;
 		}
 
 
-		//robotRef1.rndMovement();
-
-
 		window.clear();
-		myMaze.draw(window);
-		robotRef1.solveMaze();
-		robotRef1.draw(window);
-		
 
+		myMaze.draw(window);
+
+		if (!escapeEditor) {
+			myMaze.editor(event, window);
+		}
+		else if (escapeEditor) {
+			robotRef1.solveMaze();
+			robotRef1.draw(window);
+		}
 
 		Sleep(40);				//Delay (probz ms)
 		window.display();
+
 	}
 
 	return 0;

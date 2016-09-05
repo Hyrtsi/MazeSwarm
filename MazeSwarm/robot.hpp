@@ -36,9 +36,9 @@ private:
 		STATE_WAIT
 	};
 
-	//const Maze*								_maze;		//???????????????????????????????????????????
-	Maze*									_maze;				//AEORIHAEORUHAPEORUHAPORUEHPAOUERHPOAUERHPAOUERHPOAUERH
-	float									_x;					//Why not change all these to int? Vector doesn't like or the drawer?
+	//const Maze*								_maze;			// OLD for Const squares
+	Maze*									_maze;				// NEW for editing
+	float									_x;
 	float									_y;
 
 	float									_xOrigin;
@@ -47,12 +47,12 @@ private:
 
 	sf::Vector2i							_direction{ 0, 0 };				//Direction is {x,y}
 	State									_state;
-	std::vector<Branch>	_branches;						//Collection of _branchDirections
+	std::vector<Branch>	_branches;								//Collection of _branchDirections
 	sf::CircleShape circle;
 
 	static const std::vector<sf::Vector2i>	__directions;
 
-	bool facingWall(void);								//Turns out this function is almost useless. solveMaze -> init is OK use
+	bool facingWall(void);										//Turns out this function is almost useless. solveMaze -> init is OK use
 	bool atFinish(void);
 
 	void moveDirection(const sf::Vector2i& direction);

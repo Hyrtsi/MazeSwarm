@@ -45,7 +45,6 @@ void Robot::moveTest(void) {
 
 void Robot::solveMaze(void) {
 
-
 	if (atFinish() && _state != STATE_FINISH) {			//Second option is so that robot can walk past the finish normally
 		_state = STATE_FINISH;
 		std::cout << "Found It!";
